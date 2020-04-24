@@ -1,0 +1,7 @@
+C:\Users\owenp\source\repos\PathFinding\PathFinding\bin\Debug\PathFinding.exe.config
+C:\Users\owenp\source\repos\PathFinding\PathFinding\bin\Debug\PathFinding.exe
+C:\Users\owenp\source\repos\PathFinding\PathFinding\bin\Debug\PathFinding.pdb
+C:\Users\owenp\source\repos\PathFinding\PathFinding\obj\Debug\PathFinding.csprojAssemblyReference.cache
+C:\Users\owenp\source\repos\PathFinding\PathFinding\obj\Debug\PathFinding.csproj.CoreCompileInputs.cache
+C:\Users\owenp\source\repos\PathFinding\PathFinding\obj\Debug\PathFinding.exe
+C:\Users\owenp\source\repos\PathFinding\PathFinding\obj\Debug\PathFinding.pdb
