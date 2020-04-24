@@ -16,7 +16,7 @@ namespace PathFinding
             wall = ConsoleColor.White
         }
 
-        public const int WINDOWWIDTH = 50;
+        public const int WINDOWWIDTH = 40;
         public const int WINDOWHEIGHT = 20;
         public const ConsoleColor DEFAULTCOLOUR = ConsoleColor.Black;
 
@@ -75,10 +75,12 @@ namespace PathFinding
                 }
             }
 
+            public static int Width { get { return _staticGrid.GetLength(1); } }
+            public static int Height { get { return _staticGrid.GetLength(0); } }
             public static void SetUp()
             {
-                _staticGrid = new ConsoleColor[WINDOWHEIGHT - 1, WINDOWWIDTH];
-                _dynamicGrid = new ConsoleColor[WINDOWHEIGHT - 1, WINDOWWIDTH];
+                _staticGrid = new ConsoleColor[WINDOWHEIGHT - 1, WINDOWWIDTH/2];
+                _dynamicGrid = new ConsoleColor[WINDOWHEIGHT - 1, WINDOWWIDTH/2];
 
                 Fill(DEFAULTCOLOUR);
 
@@ -94,7 +96,7 @@ namespace PathFinding
                     {
 
                         Console.ForegroundColor = _dynamicGrid[i, k];
-                        Console.Write('█');
+                        Console.Write("██");
                     }
                 }
             }
@@ -110,7 +112,7 @@ namespace PathFinding
                 }
             }
 
-            public static void Update()
+            public static void ClearDynamicGrid()
             {
                 _dynamicGrid = _staticGrid.Clone() as ConsoleColor[,];
             }
@@ -183,16 +185,21 @@ namespace PathFinding
             {
                 if (!(x >= _dynamicGrid.GetLength(1) || y >= _dynamicGrid.GetLength(0) || x < 0 || y < 0))
                 {
-                    try
+                    if (_dynamicGrid[y, x] != (ConsoleColor)Points.end && _dynamicGrid[y, x] != (ConsoleColor)Points.start && _dynamicGrid[y, x] != (ConsoleColor)Points.wall)
                     {
 
-                        _dynamicGrid[y, x] = c;
+                        try
+                        {
 
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error: ", e);
-                        Environment.Exit(-1);
+
+                            _dynamicGrid[y, x] = c;
+
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error: ", e);
+                            Environment.Exit(-1);
+                        }
                     }
                 }
             }
@@ -233,6 +240,24 @@ namespace PathFinding
                 }
                 return false;
             }
+            public static bool IsStaticPoint(int x, int y, Points p)
+            {
+                if (!(x >= _staticGrid.GetLength(1) || y >= _staticGrid.GetLength(0) || x < 0 || y < 0))
+                {
+                    try
+                    {
+
+                        return _staticGrid[y, x] == (ConsoleColor)p;
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: ", e);
+                        Environment.Exit(-1);
+                    }
+                }
+                return false;
+            }
 
             public static List<int[]> GetAvailableCells(int x, int y)
             {
@@ -244,22 +269,22 @@ namespace PathFinding
 
                     if (x > 0 && _staticGrid[y, x - 1] != (ConsoleColor)Points.wall)
                     {
-                        available.Add(new int[] { y, x - 1 });
+                        available.Add(new int[] { x - 1 ,y,1});
                     }
 
                     if (y > 0 && _staticGrid[y - 1, x] != (ConsoleColor)Points.wall)
                     {
-                        available.Add(new int[] { y - 1, x });
+                        available.Add(new int[] { x,y - 1,1});
                     }
 
-                    if (x < _staticGrid.GetLength(1) - 1 && _staticGrid[y, x + 1] != (ConsoleColor)Points.wall)
+                    if (x < _staticGrid.GetLength(1) - 2 && _staticGrid[y, x + 1] != (ConsoleColor)Points.wall)
                     {
-                        available.Add(new int[] { y, x + 1 });
+                        available.Add(new int[] { x + 1 ,y,1});
                     }
 
                     if (y < _staticGrid.GetLength(0) - 1 && _staticGrid[y + 1, x] != (ConsoleColor)Points.wall)
                     {
-                        available.Add(new int[] { y + 1, x });
+                        available.Add(new int[] { x, y + 1, 1});
                     }
                 }
 
@@ -273,13 +298,13 @@ namespace PathFinding
             Console.SetWindowSize(WINDOWWIDTH, WINDOWHEIGHT);
             Console.SetBufferSize(WINDOWWIDTH, WINDOWHEIGHT);
             Console.CursorVisible = false;
-            Console.Title = "Path Finding";
+            Console.Title = "Dijkstra's Algorithm";
             Grid.SetUp();
         }  
 
         public static void Update()
         {
-            Grid.Update();
+            Grid.ClearDynamicGrid();
         }
 
 
