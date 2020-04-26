@@ -22,6 +22,13 @@ namespace PathFinding
 
         public static class Grid
         {
+
+            public enum Distances
+            {
+                diagonal = 3,
+                straight = 2
+            }
+
             private static ConsoleColor[,] _staticGrid;
             private static ConsoleColor[,] _dynamicGrid;
 
@@ -166,7 +173,7 @@ namespace PathFinding
             {
                 foreach (var w in walls)
                 {
-                    if (w[0] <= _staticGrid.GetLength(1) && w[1] <= _staticGrid.GetLength(0) && w[0] > 0 && w[1] > 0)
+                    if (w[0] < _staticGrid.GetLength(1) && w[1] <= _staticGrid.GetLength(0) && w[0] >= 0 && w[1] >= 0)
                     {
                         try
                         {
@@ -269,22 +276,42 @@ namespace PathFinding
 
                     if (x > 0 && _staticGrid[y, x - 1] != (ConsoleColor)Points.wall)
                     {
-                        available.Add(new int[] { x - 1 ,y,1});
+                        available.Add(new int[] { x - 1 ,y,(int)Distances.straight});
                     }
 
                     if (y > 0 && _staticGrid[y - 1, x] != (ConsoleColor)Points.wall)
                     {
-                        available.Add(new int[] { x,y - 1,1});
+                        available.Add(new int[] { x,y - 1, (int)Distances.straight });
                     }
 
                     if (x < _staticGrid.GetLength(1) - 2 && _staticGrid[y, x + 1] != (ConsoleColor)Points.wall)
                     {
-                        available.Add(new int[] { x + 1 ,y,1});
+                        available.Add(new int[] { x + 1 ,y, (int)Distances.straight });
                     }
 
                     if (y < _staticGrid.GetLength(0) - 1 && _staticGrid[y + 1, x] != (ConsoleColor)Points.wall)
                     {
-                        available.Add(new int[] { x, y + 1, 1});
+                        available.Add(new int[] { x, y + 1, (int)Distances.straight });
+                    }
+
+                    if (x > 0 && y > 0 && _staticGrid[y - 1, x - 1] != (ConsoleColor)Points.wall)
+                    {
+                        available.Add(new int[] { x - 1, y - 1, (int)Distances.diagonal });
+                    }
+
+                    if (y > 0 && x < _staticGrid.GetLength(1) - 2 && _staticGrid[y - 1, x + 1] != (ConsoleColor)Points.wall)
+                    {
+                        available.Add(new int[] { x + 1, y - 1, (int)Distances.diagonal });
+                    }
+
+                    if (y < _staticGrid.GetLength(0) - 1 && x < _staticGrid.GetLength(1) - 2 && _staticGrid[y + 1, x + 1] != (ConsoleColor)Points.wall)
+                    {
+                        available.Add(new int[] { x + 1, y + 1, (int)Distances.diagonal });
+                    }
+
+                    if (y < _staticGrid.GetLength(0) - 1 && x > 0 && _staticGrid[y + 1, x - 1] != (ConsoleColor)Points.wall)
+                    {
+                        available.Add(new int[] { x - 1, y + 1, (int)Distances.diagonal });
                     }
                 }
 
@@ -300,6 +327,7 @@ namespace PathFinding
             Console.CursorVisible = false;
             Console.Title = "Dijkstra's Algorithm";
             Grid.SetUp();
+
         }  
 
         public static void Update()

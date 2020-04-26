@@ -40,7 +40,7 @@ namespace PathFinding
                 cells = Display.Grid.GetAvailableCells(currentCell[0], currentCell[1]);
                 if (cells.Count > 0)
                 {
-                    lowest = 999;
+                    lowest = Display.Grid.Width * Display.Grid.Height;
                     for (int i = 0; i < cells.Count(); ++i)
                     {
                         if (_grid[cells[i][1], cells[i][0]] < lowest && _grid[cells[i][1], cells[i][0]] != 0)
@@ -56,7 +56,7 @@ namespace PathFinding
                 {
                     break;
                 }
-            } while (lowest > 1);
+            } while (lowest > (int)Display.Grid.Distances.diagonal);
         }
 
         public void PathFind()
@@ -67,7 +67,6 @@ namespace PathFinding
             {
                 cells = Display.Grid.GetAvailableCells(_elements[k][0], _elements[k][1]);
 
-                
 
                 foreach(var c in cells)
                 {
@@ -124,12 +123,13 @@ namespace PathFinding
                     }
                     
                 }
-                if (k % 20 == 0)
+                if (k % 10 == 0)
                 {
                     Display.Grid.Display();
-                    System.Threading.Thread.Sleep(30);
+                    System.Threading.Thread.Sleep(10);
                 }
 
+                
                 ++k;
             }
 
