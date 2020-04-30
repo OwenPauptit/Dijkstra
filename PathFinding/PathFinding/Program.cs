@@ -14,26 +14,29 @@ namespace PathFinding
 
         static void Main(string[] args)
         {
-
-
             rnd = new Random();
 
             Display.Create();
 
-            Reader.ReadFromTextFile("file.txt");
+            Display.MainMenu.Run();
+        }
 
+
+        public static void Run()
+        {
             Display.Update();
-            //Display.Grid.Display();
 
-            Dijkstra dijkstra = new Dijkstra(Display.Grid.StartPoint,Display.Grid.EndPoint,Display.Grid.Width,Display.Grid.Height);
+            Dijkstra dijkstra = new Dijkstra(Display.Grid.StartPoint, Display.Grid.EndPoint, Display.Grid.Width, Display.Grid.Height);
 
             dijkstra.PathFind();
 
             while (true)
             {
-                Console.ReadKey();
+                if(Console.ReadKey().Key == ConsoleKey.Escape)
+                {
+                    return;
+                }
             }
-
         }
 
       

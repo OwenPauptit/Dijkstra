@@ -44,6 +44,11 @@ namespace PathFinding
                     {
                         try
                         {
+                            if (_endPoint != null)
+                            {
+                                _staticGrid[_endPoint[1], _endPoint[0]] = DEFAULTCOLOUR;
+                            }
+
                             _staticGrid[value[1], value[0]] = (ConsoleColor)Points.end;
 
                             _endPoint = new int[] { value[0], value[1] };
@@ -67,6 +72,11 @@ namespace PathFinding
                     {
                         try
                         {
+
+                            if (_startPoint != null)
+                            {
+                                _staticGrid[_startPoint[1], _startPoint[0]] = DEFAULTCOLOUR;
+                            }
 
                             _staticGrid[value[1], value[0]] = (ConsoleColor)Points.start;
 
@@ -273,7 +283,7 @@ namespace PathFinding
 
                 if (x <= _staticGrid.GetLength(1) && y <= _staticGrid.GetLength(0) && x > 0 && y > 0)
                 {
-
+                    // left, up, right, down
                     if (x > 0 && _staticGrid[y, x - 1] != (ConsoleColor)Points.wall)
                     {
                         available.Add(new int[] { x - 1 ,y,(int)Distances.straight});
@@ -294,6 +304,7 @@ namespace PathFinding
                         available.Add(new int[] { x, y + 1, (int)Distances.straight });
                     }
 
+                    // diagonals
                     if (x > 0 && y > 0 && _staticGrid[y - 1, x - 1] != (ConsoleColor)Points.wall)
                     {
                         available.Add(new int[] { x - 1, y - 1, (int)Distances.diagonal });
@@ -320,6 +331,96 @@ namespace PathFinding
             }
         }
 
+        public static class MainMenu
+        {
+
+            private static int _choice;
+            enum Options
+            {
+                Random = 1,
+                LoadFile,
+                EnterCoords,
+                Help,
+                Quit
+            }
+            public static void Run()
+            {
+
+                while (true)
+                {
+
+                    Display();
+                    GetInput();
+                }
+                
+            }
+
+            private static void Display()
+            {
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("    DIJKSTRA'S SHORTEST PATH ALGORITHM");
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("Main Menu: ");
+                Console.WriteLine();
+                Console.WriteLine(" {0}. Generate Random Grid",((int)Options.Random).ToString());
+                Console.WriteLine(" {0}. Load Grid from textfile", ((int)Options.LoadFile).ToString());
+                Console.WriteLine(" {0}. Manually Enter Grid Coords", ((int)Options.EnterCoords).ToString());
+                Console.WriteLine(" {0}. Help", ((int)Options.Help).ToString());
+                Console.WriteLine(" {0}. Quit", ((int)Options.Quit).ToString());
+                Console.WriteLine();
+            }
+
+            private static void GetInput()
+            {
+                _choice = 0;
+                Int32.TryParse(Console.ReadLine(), out _choice);
+
+                switch (_choice)
+                {
+                    case (int)Options.Random:
+                        Console.WriteLine("Random");
+                        break;
+                    case (int)Options.LoadFile:
+                        LoadFromFile();
+                        Program.Run();
+                        break;
+                    case (int)Options.EnterCoords:
+                        Reader.ReadInCoords();
+                        Program.Run();
+                        break;
+                    case (int)Options.Help:
+                        Console.WriteLine("Help");
+                        break;
+                    case (int)Options.Quit:
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid Input");
+                        break;
+                }
+
+            }
+
+            private static void LoadFromFile()
+            {
+                string fileName;
+                Console.WriteLine();
+                Console.WriteLine("Enter the filename: ");
+                fileName = Console.ReadLine();
+
+                while (!System.IO.File.Exists(fileName) || fileName.Substring(fileName.Length-3) != "txt")
+                {
+                    Console.WriteLine("Invalid input, try again");
+                    fileName = Console.ReadLine();
+                }
+
+                Reader.ReadFromTextFile(fileName);
+            }
+        }
         public static void Create()
         {
             Console.SetWindowSize(WINDOWWIDTH, WINDOWHEIGHT);
