@@ -1,26 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PathFinding
 {
     class Program
     {
-
-
         public static Random rnd;
 
         static void Main(string[] args)
         {
+
             rnd = new Random();
 
             Display.Create();
 
             Display.MainMenu.Run();
         }
-
 
         public static void Run()
         {
@@ -34,11 +30,11 @@ namespace PathFinding
             {
                 if(Console.ReadKey().Key == ConsoleKey.Escape)
                 {
+                    Console.Clear();
+                    Display.Grid.ClearAll();
                     return;
                 }
             }
-        }
-
-      
+        }      
     }
 }

@@ -1,0 +1,14 @@
+This program will accept any text file for loading in a grid.
+
+To create a grid, simply:
+
+	1. Create a text file in the directory of the executable
+
+	2. Mark on the start location with a capital 'S'
+
+	3. Mark on the end location with a capital 'F'
+
+	4. Mark on any walls with a capital 'X'
+
+Note: 
+	The program will only read data from inside the boundaries set in the settings menu

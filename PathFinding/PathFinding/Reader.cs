@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PathFinding
 {
@@ -69,9 +67,9 @@ namespace PathFinding
         {
             int[] coords = new int[2];
             Console.WriteLine("    Enter x-coord: ");
-            while (!Int32.TryParse(Console.ReadLine(), out coords[0]) || coords[0] < (wall? -1: 1) || coords[0] >= Display.Grid.Width) { Console.WriteLine("Invalid Input, try again"); }
+            while (!Int32.TryParse(Console.ReadLine(), out coords[0]) || coords[0] < (wall? -1: 1) || coords[0] >= Display.Grid.Width-1) { Console.WriteLine("Invalid Input, try again"); }
             Console.WriteLine("    Enter y-coord: ");
-            while (!Int32.TryParse(Console.ReadLine(), out coords[1]) || coords[1] < (wall ? -1 : 1) || coords[1] >= Display.Grid.Height) { Console.WriteLine("Invalid Input, try again"); }
+            while (!Int32.TryParse(Console.ReadLine(), out coords[1]) || coords[1] < (wall? -1: 1) || coords[1] >= Display.Grid.Height) { Console.WriteLine("Invalid Input, try again"); }
             return coords;
         }
     }

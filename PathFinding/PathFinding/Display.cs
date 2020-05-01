@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace PathFinding
 {
     static class Display
     {
-
         public enum Points
         {
             start = ConsoleColor.Green,
@@ -16,9 +14,13 @@ namespace PathFinding
             wall = ConsoleColor.White
         }
 
-        public const int WINDOWWIDTH = 40;
-        public const int WINDOWHEIGHT = 20;
-        public const ConsoleColor DEFAULTCOLOUR = ConsoleColor.Black;
+        private const int SMALLESTWIDTH = 20;
+        public static int WINDOWWIDTH { get; private set; } = 40;
+        public static int WINDOWHEIGHT { get; private set; } = 20;
+        public static ConsoleColor DEFAULTCOLOUR { get; private set; } = ConsoleColor.Black;
+        public static int DELAY { get; private set; } = 10;
+
+        public static int REFRESHRATE { get; private set; } = 30;
 
         public static class Grid
         {
@@ -129,6 +131,16 @@ namespace PathFinding
                 }
             }
 
+            public static void ClearAll()
+            {
+                for (int i = 0; i < _staticGrid.GetLength(0); ++i)
+                {
+                    for (int k = 0; k < _staticGrid.GetLength(1); ++k)
+                    {
+                        _staticGrid[i, k] = DEFAULTCOLOUR;
+                    }
+                }
+            }
             public static void ClearDynamicGrid()
             {
                 _dynamicGrid = _staticGrid.Clone() as ConsoleColor[,];
@@ -335,14 +347,24 @@ namespace PathFinding
         {
 
             private static int _choice;
-            enum Options
+            enum MenuOptions
             {
                 Random = 1,
                 LoadFile,
                 EnterCoords,
                 Help,
+                Settings,
                 Quit
             }
+
+            enum SettingsOptions
+            {
+                ChangeGridSize = 1,
+                ChangeRefresh,
+                ChangeDelay,
+                Quit
+            }
+
             public static void Run()
             {
 
@@ -352,12 +374,11 @@ namespace PathFinding
                     Display();
                     GetInput();
                 }
-                
+
             }
 
             private static void Display()
             {
-                Console.Clear();
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine();
                 Console.WriteLine();
@@ -366,11 +387,12 @@ namespace PathFinding
                 Console.WriteLine();
                 Console.WriteLine("Main Menu: ");
                 Console.WriteLine();
-                Console.WriteLine(" {0}. Generate Random Grid",((int)Options.Random).ToString());
-                Console.WriteLine(" {0}. Load Grid from textfile", ((int)Options.LoadFile).ToString());
-                Console.WriteLine(" {0}. Manually Enter Grid Coords", ((int)Options.EnterCoords).ToString());
-                Console.WriteLine(" {0}. Help", ((int)Options.Help).ToString());
-                Console.WriteLine(" {0}. Quit", ((int)Options.Quit).ToString());
+                Console.WriteLine(" {0}. Generate Random Grid", ((int)MenuOptions.Random).ToString());
+                Console.WriteLine(" {0}. Load Grid from textfile", ((int)MenuOptions.LoadFile).ToString());
+                Console.WriteLine(" {0}. Manually Enter Grid Coords", ((int)MenuOptions.EnterCoords).ToString());
+                Console.WriteLine(" {0}. Help", ((int)MenuOptions.Help).ToString());
+                Console.WriteLine(" {0}. Settings", ((int)MenuOptions.Settings).ToString());
+                Console.WriteLine(" {0}. Quit", ((int)MenuOptions.Quit).ToString());
                 Console.WriteLine();
             }
 
@@ -379,23 +401,27 @@ namespace PathFinding
                 _choice = 0;
                 Int32.TryParse(Console.ReadLine(), out _choice);
 
+                Console.Clear();
                 switch (_choice)
                 {
-                    case (int)Options.Random:
-                        Console.WriteLine("Random");
+                    case (int)MenuOptions.Random:
+                        Console.WriteLine("Coming Soon!!!");
                         break;
-                    case (int)Options.LoadFile:
+                    case (int)MenuOptions.LoadFile:
                         LoadFromFile();
                         Program.Run();
                         break;
-                    case (int)Options.EnterCoords:
+                    case (int)MenuOptions.EnterCoords:
                         Reader.ReadInCoords();
                         Program.Run();
                         break;
-                    case (int)Options.Help:
-                        Console.WriteLine("Help");
+                    case (int)MenuOptions.Help:
+                        DisplayHelpMenu();
                         break;
-                    case (int)Options.Quit:
+                    case (int)MenuOptions.Settings:
+                        Settings();
+                        break;
+                    case (int)MenuOptions.Quit:
                         Environment.Exit(0);
                         break;
                     default:
@@ -412,7 +438,7 @@ namespace PathFinding
                 Console.WriteLine("Enter the filename: ");
                 fileName = Console.ReadLine();
 
-                while (!System.IO.File.Exists(fileName) || fileName.Substring(fileName.Length-3) != "txt")
+                while (!System.IO.File.Exists(fileName) || fileName.Substring(fileName.Length - 3) != "txt")
                 {
                     Console.WriteLine("Invalid input, try again");
                     fileName = Console.ReadLine();
@@ -420,7 +446,83 @@ namespace PathFinding
 
                 Reader.ReadFromTextFile(fileName);
             }
+
+            private static void DisplayHelpMenu()
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("    DIJKSTRA'S SHORTEST PATH ALGORITHM");
+                Console.WriteLine();
+                Console.WriteLine("Help Menu:");
+                Console.WriteLine();
+                Console.WriteLine(" - Read about this algorithm at:");
+                Console.WriteLine("https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm");
+                Console.WriteLine();
+                Console.WriteLine(" - When running the program, press esc  to return to the main menu");
+                Console.WriteLine();
+                Console.WriteLine(" - The grid is set at default to 20 x 20");
+                Console.WriteLine();
+                Console.WriteLine(" - For help with files, see 'help.txt'");
+                Console.WriteLine();
+                Console.WriteLine("Press any key to return to the main menu");
+                Console.ReadKey();
+                Console.Clear();
+            }
+
+            private static void DisplaySettingsMenu()
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("    DIJKSTRA'S SHORTEST PATH ALGORITHM");
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("Settings Menu:");
+                Console.WriteLine();
+                Console.WriteLine(" {0}. Change Grid Size", ((int)SettingsOptions.ChangeGridSize).ToString());
+                Console.WriteLine(" {0}. Change Refresh Rate", ((int)SettingsOptions.ChangeRefresh).ToString());
+                Console.WriteLine(" {0}. Change Delay", ((int)SettingsOptions.ChangeDelay).ToString());
+                Console.WriteLine(" {0}. Return to Main Menu", ((int)SettingsOptions.Quit).ToString());
+                Console.WriteLine();
+
+            }
+
+            private static void Settings()
+            {
+                int choice;
+
+                while (true)
+                {
+
+                    DisplaySettingsMenu();
+
+                    choice = 0;
+                    Int32.TryParse(Console.ReadLine(), out choice);
+
+
+                    Console.Clear();
+                    switch (choice)
+                    {
+                        case (int)SettingsOptions.ChangeGridSize:
+                            ChangeSize();
+                            break;
+                        case (int)SettingsOptions.ChangeRefresh:
+                            ChangeRefreshRate();
+                            break;
+                        case (int)SettingsOptions.ChangeDelay:
+                            ChangeDelay();
+                            break;
+                        case (int)SettingsOptions.Quit:
+                            return;
+                        default:
+                            Console.WriteLine("Invalid Input");
+                            break;
+                    }
+                }
+            }
         }
+
         public static void Create()
         {
             Console.SetWindowSize(WINDOWWIDTH, WINDOWHEIGHT);
@@ -431,12 +533,68 @@ namespace PathFinding
 
         }  
 
+        private static void ChangeSize()
+        {
+            int choice = 0;
+
+
+            Console.WriteLine();
+            Console.WriteLine();
+
+            Console.WriteLine("    Enter new grid size: ");
+            Int32.TryParse(Console.ReadLine(), out choice);
+            while (choice*2 < SMALLESTWIDTH || choice*2 > Console.LargestWindowWidth || choice > Console.LargestWindowHeight )
+            {
+                Console.WriteLine("    Invalid input, try again: ");
+                Int32.TryParse(Console.ReadLine(), out choice);
+            }
+            WINDOWWIDTH = choice*2;
+            WINDOWHEIGHT = choice;
+
+            Create();
+            Console.Clear();
+        }
+
+        private static void ChangeDelay()
+        {
+            int choice = 0;
+
+            Console.WriteLine();
+            Console.WriteLine();
+
+            Console.WriteLine("    Enter new delay: ");
+            Int32.TryParse(Console.ReadLine(), out choice);
+            while (choice < 0)
+            {
+                Console.WriteLine("    Invalid input, try again: ");
+                Int32.TryParse(Console.ReadLine(), out choice);
+            }
+            DELAY = choice;
+            Console.Clear();
+        }
+
+        private static void ChangeRefreshRate()
+        {
+            int choice = 0;
+
+            Console.WriteLine();
+            Console.WriteLine();
+
+            Console.WriteLine("    Enter new refreshrate (recommended to be at least double the grid height): ");
+            Int32.TryParse(Console.ReadLine(), out choice);
+            while (choice < 0)
+            {
+                Console.WriteLine("    Invalid input, try again: ");
+                Int32.TryParse(Console.ReadLine(), out choice);
+            }
+            REFRESHRATE = choice;
+            Console.Clear();
+        }
+
         public static void Update()
         {
             Grid.ClearDynamicGrid();
         }
-
-
 
     }
 }
