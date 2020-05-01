@@ -126,7 +126,10 @@ namespace PathFinding
                     System.Threading.Thread.Sleep(Display.DELAY);
                 }
 
-                
+                if (_elements.Count > Display.Grid.Width * Display.Grid.Height * 2)
+                {
+                    return;
+                }
                 ++k;
             }
 

@@ -146,17 +146,18 @@ namespace PathFinding
                 _dynamicGrid = _staticGrid.Clone() as ConsoleColor[,];
             }
 
-            private static void SetRandomPoints()
+            public static void Randomise()
             {
                 int x, y;
                 foreach (Points p in Enum.GetValues(typeof(Points)))
                 {
-                    if (p != Points.wall)
+                    int occurences = (p == Points.wall)? Width:1;
+                    for (int i = 0; i < occurences; ++i)
                     {
                         do
                         {
-                            x = Program.rnd.Next(0, WINDOWWIDTH);
-                            y = Program.rnd.Next(0, _staticGrid.GetLength(0));
+                            x = Program.rnd.Next(0, _staticGrid.GetLength(1)-1);
+                            y = Program.rnd.Next(0, _staticGrid.GetLength(0)-1);
 
                         } while (_staticGrid[y, x] != DEFAULTCOLOUR);
 
@@ -405,7 +406,8 @@ namespace PathFinding
                 switch (_choice)
                 {
                     case (int)MenuOptions.Random:
-                        Console.WriteLine("Coming Soon!!!");
+                        RandomiseGrid();
+                        Program.Run();
                         break;
                     case (int)MenuOptions.LoadFile:
                         LoadFromFile();
@@ -580,9 +582,9 @@ namespace PathFinding
             Console.WriteLine();
             Console.WriteLine();
 
-            Console.WriteLine("    Enter new refreshrate (recommended to be at least double the grid height): ");
+            Console.WriteLine("    Enter new refreshrate (how many frames are between each refresh) - recommended to be at least double the grid height: ");
             Int32.TryParse(Console.ReadLine(), out choice);
-            while (choice < 0)
+            while (choice <= 0)
             {
                 Console.WriteLine("    Invalid input, try again: ");
                 Int32.TryParse(Console.ReadLine(), out choice);
@@ -591,6 +593,26 @@ namespace PathFinding
             Console.Clear();
         }
 
+        private static void RandomiseGrid()
+        {
+            int x, y;
+            foreach (Points p in Enum.GetValues(typeof(Points)))
+            {
+                int occurences = (p == Points.wall) ? Grid.Width*Grid.Width/5 : 1;
+                for (int i = 0; i < occurences; ++i)
+                {
+                    do
+                    {
+                        x = Program.rnd.Next(1, Grid.Width-1);
+                        y = Program.rnd.Next(1, Grid.Height-1);
+
+                    } while (Grid.IsStaticPoint(x,y,Points.start) || Grid.IsStaticPoint(x, y, Points.end));
+
+                    Grid.SetStaticPoint(x,y,p);
+
+                }
+            }
+        }
         public static void Update()
         {
             Grid.ClearDynamicGrid();
